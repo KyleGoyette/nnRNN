@@ -100,7 +100,8 @@ class ExpRNN(nn.Module):
 
     def forward(self, input, hidden=None):
         if hidden is None:
-            hidden = input.new_zeros(input.size(0), self.hidden_size, requires_grad=False)
+            hidden = input.new_zeros(input.size(0), self.hidden_size, requires_grad=True)
+            self.first_hidden = hidden
 
         input = self.input_kernel(input)
 
