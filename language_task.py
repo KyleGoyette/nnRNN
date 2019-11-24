@@ -4,13 +4,11 @@ import math
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from RNN_Cell import OrthoRNNCell, NewOrthoRNNCell
-from utils import str2bool, select_network,calc_hidden_size_PTB
-from expRNN.initialization import henaff_init,cayley_init, random_orthogonal_init
+from utils import select_network,select_optimizer
 import numpy as np
 import os
 import pickle
-from tensorboardX import SummaryWriter
+from datetime import datetime
 
 class Dictionary(object):
     def __init__(self):
@@ -104,38 +102,42 @@ class RNNModel(nn.Module):
 
 
 parser = argparse.ArgumentParser(description='PyTorch PennTreeBank RNN/LSTM Language Model')
+parser.add_argument('--net-type', type=str,  default='nnRNN',
+                    help='rnn net type')
 parser.add_argument('--emsize', type=int, default=200,
                     help='size of word embeddings')
-parser.add_argument('--nhid', type=int, default=1150,
+parser.add_argument('--nhid', type=int, default=1024,
                     help='number of hidden units per layer')
-parser.add_argument('--capacity', type=int, default=2,
-                    help='unitary matrix capacity')
 parser.add_argument('--epochs', type=int, default=100,
                     help='upper epoch limit')
-parser.add_argument('--batch_size', type=int, default=128, metavar='N',
-                    help='batch size')
 parser.add_argument('--bptt', type=int, default=150,
                     help='sequence length')
-parser.add_argument('--tied', action='store_true',
-                    help='tie the word embedding and softmax weights')
+parser.add_argument('--cuda', action='store_true', default=False, help='use cuda')
 parser.add_argument('--seed', type=int, default=400,
                     help='random seed')
-parser.add_argument('--cuda', type=str2bool, default=True, help='use cuda')
+parser.add_argument('--batch', type=int, default=128, metavar='N',
+                    help='batch size')
 parser.add_argument('--log-interval', type=int, default=200, metavar='N',
                     help='report interval')
 parser.add_argument('--save', type=str,  default='model.pt',
                     help='path to save the final model')
-parser.add_argument('--net-type', type=str,  default='NRNN2',
-                    help='rnn net type')
-parser.add_argument('--lr', type=float, default=2e-4)
-parser.add_argument('--lr_orth', type=float, default=2e-5)
-parser.add_argument('--rinit', type=str, default="henaff", help='recurrent weight matrix initialization')
-parser.add_argument('--iinit', type=str, default="kaiming",help='input weight matrix initialization' )
-parser.add_argument('--ostep_method', type=str, default='exp', help='if learnable P, which way, exp or cayley')
-parser.add_argument('--alam', type=float, default=0.0001, help='alpha values lamda for ARORNN and ARORNN2')
-parser.add_argument('--nonlin', type=str, default='modrelu', help='non linearity none, relu, tanh, sigmoid')
-parser.add_argument('--weight_decay', type=float, default=0)
-parser.add_argument('--alpha', type=float, default=0.99)
+parser.add_argument('--lr', type=float, default=0.0008)
+parser.add_argument('--lr_orth', type=float, default=8e-5)
+parser.add_argument('--rinit', type=str, default="cayley",
+                    choices=['random', 'cayley', 'henaff', 'xavier'],
+                    help='recurrent weight matrix initialization')
+parser.add_argument('--iinit', type=str, default="kaiming",
+                    choices=['xavier', 'kaiming'],
+                    help='input weight matrix initialization' )
+parser.add_argument('--nonlin', type=str, default='modrelu',
+                    choices=['none','modrelu', 'tanh', 'relu', 'sigmoid'],
+                    help='non linearity none, relu, tanh, sigmoid')
+parser.add_argument('--alam', type=float, default=1, help='decay for gamma values nnRNN')
+parser.add_argument('--Tdecay', type=float,
+                    default=0.0001, help='weight decay on upper T')
+parser.add_argument('--optimizer', type=str, default='RMSprop', choices=['RMSprop', 'Adam'])
+parser.add_argument('--alpha', type=float, default=0.9)
+parser.add_argument('--betas', type=tuple, default=(0.0, 0.9))
 
 args = parser.parse_args()
 
@@ -150,17 +152,7 @@ if torch.cuda.is_available():
         print("WARNING: You have a CUDA device, so you should probably run with --cuda")
     else:
         torch.cuda.manual_seed(args.seed)
-if args.rinit == "cayley":
-    rinit = cayley_init
-elif args.rinit == "henaff":
-    rinit = henaff_init
-elif args.rinit == "random":
-    rinit = random_orthogonal_init
 
-if args.iinit == "xavier":
-    iinit = nn.init.xavier_normal_
-elif args.iinit == 'kaiming':
-    iinit = nn.init.kaiming_normal_
 ###############################################################################
 # Load data
 ###############################################################################
@@ -174,8 +166,8 @@ def batchify(data, bsz):
     data = data.narrow(0, 0, nbatch * bsz)
     # Evenly divide the data across the bsz batches.
     data = data.view(bsz, -1).t().contiguous()
-    if args.cuda:
-        data = data.cuda()
+    #if args.cuda:
+    #    data = data.cuda()
     return data
 
 eval_batch_size = 10
@@ -190,14 +182,13 @@ test_data = batchify(corpus.test, eval_batch_size)
 ntokens = len(corpus.dictionary)
 NET_TYPE = args.net_type
 inp_size = args.emsize
-hid_size = args.nhid #calc_hidden_size_PTB(NET_TYPE,2150000,50,args.emsize)
-print(calc_hidden_size_PTB(NET_TYPE,2100000,50,args.emsize))
+hid_size = args.nhid
 alam = args.alam
 CUDA = args.cuda
 nonlin = args.nonlin
 
 
-rnn = select_network(NET_TYPE,inp_size,hid_size,nonlin,rinit,iinit,CUDA,args.ostep_method)
+rnn = select_network(inp_size,args)
 
 model = RNNModel(rnn, ntokens, inp_size, hid_size, args.tied)
 if args.cuda:
@@ -238,12 +229,13 @@ def evaluate(data_source):
         correct += torch.eq(torch.argmax(output_flat,dim=1),targets).sum().item()
         processed += targets.shape[0]
         hidden = hidden.detach()
+
         if NET_TYPE == 'LSTM':
                 model.rnn.ct = model.rnn.ct.detach()
     return total_loss / len(data_source), correct/processed
 
 
-def train(optimizer,orthog_optimizer):
+def train(optimizer, orthog_optimizer):
     # Turn on training mode which enables dropout.
     model.train()
     total_loss = 0
@@ -252,34 +244,35 @@ def train(optimizer,orthog_optimizer):
     hidden = None
     losses = []
     bpcs = []
+
     for batch, i in enumerate(range(0, train_data.size(0) - 1, args.bptt)):
         
         data, targets = get_batch(train_data, i)
         # Starting each batch, we detach the hidden state from how it was previously produced.
         # If we didn't, the model would try backpropagating all the way to start of the dataset.
+
         if hidden is not None:
             hidden = hidden.detach()
             if NET_TYPE == 'LSTM':
                 model.rnn.ct = model.rnn.ct.detach()
-            elif NET_TYPE in ['RORNN2', 'ARORNN2']:
+            elif NET_TYPE  == 'nnRNN':
                 model.rnn.calc_rec()
-            elif NET_TYPE == 'NSRNN2':
-                model.rnn.calc_P()
+
         if i == 0 and NET_TYPE == 'LSTM':
             model.rnn.init_states(data.shape[1])
         model.zero_grad()
-        output,hidden = model(data, hidden)
+        output, hidden = model(data, hidden)
         loss_act = criterion(output.view(-1, ntokens), targets)
         loss = loss_act
-        if NET_TYPE in ['ARORNN', 'ARORNN2'] and alam > 0:
+        if NET_TYPE  == 'nnRNN' and alam > 0:
             alpha_loss = model.rnn.alpha_loss(alam)
             loss += alpha_loss
 
         loss.backward()
-        
-        optimizer.step()
+
         if orthog_optimizer:
             model.rnn.orthogonal_step(orthog_optimizer)
+        optimizer.step()
 
         total_loss += loss_act.item()
     
@@ -301,55 +294,19 @@ lr = args.lr
 decay = args.weight_decay
 best_val_loss = None
 
-# At any point you can hit Ctrl + C to break out of training early.
-orthog_optimizer = None
-if args.ostep_method == 'exp' and NET_TYPE in ['ORNN2','ORNNR2','RORNN2','ARORNN2']:
-    x = [
-        {'params': (param for param in model.parameters() if param is not model.rnn.log_P and param is not model.rnn.P and param is not model.rnn.UppT)},
-        {'params': model.rnn.UppT, 'weight_decay': decay}
-        ]
-    optimizer = optim.RMSprop(x, lr=args.lr,alpha=args.alpha)
-    orthog_optimizer = optim.RMSprop([model.rnn.log_P],lr=args.lr_orth,alpha=args.alpha)
-elif args.ostep_method == 'cayley' and NET_TYPE in ['ORNN2','ORNNR2','RORNN2','ARORNN2']:
-    optimizer = optim.RMSprop((param for param in model.parameters()
-                           if param is not model.rnn.P), lr=args.lr,alpha=args.alpha)
-    orthog_optimizer = GeoSGD([model.rnn.P],lr=args.lr_orth,alpha=args.alpha)
-elif args.ostep_method == 'exp' and NET_TYPE in ['NRNN2','NSRNN2']:
-    x = [
-        {'params': (param for param in model.parameters() if param is not model.rnn.log_Q and param is not model.rnn.Q and param is not model.rnn.UppT)},
-        {'params': model.rnn.UppT, 'weight_decay': decay}
-        ]
-    optimizer = optim.RMSprop(x, lr=args.lr,alpha=args.alpha)
-    orthog_optimizer = optim.RMSprop([model.rnn.log_Q],lr=args.lr_orth,alpha=args.alpha)
-elif args.ostep_method == 'cayley' and NET_TYPE in ['NRNN2','NSRNN2']:
-    x = [
-        {'params': (param for param in model.parameters() if param is not model.rnn.log_Q and param is not model.rnn.Q and param is not model.rnn.UppT)},
-        {'params': model.rnn.UppT, 'weight_decay': decay}
-        ]
-    optimizer = optim.RMSprop((param for param in model.parameters()
-                           if param is not model.rnn.Q), lr=args.lr,alpha=args.alpha)
-    orthog_optimizer = GeoSGD([model.rnn.Q],lr=args.lr_orth,alpha=args.alpha)
-elif NET_TYPE == 'EXPRNN':
-    optimizer = optim.RMSprop((param for param in model.parameters()
-                           if param is not model.rnn.log_recurrent_kernel and 
-                              param is not model.rnn.recurrent_kernel), lr=args.lr,alpha=args.alpha)
-    orthog_optimizer = optim.RMSprop([model.rnn.log_recurrent_kernel],lr = args.lr_orth,alpha=args.alpha)
-else:
-    optimizer = optim.RMSprop(model.parameters(), lr=args.lr,alpha=args.alpha)
 
+optimizer, orthog_optimizer = select_optimizer(model, args)
 scheduler = optim.lr_scheduler.StepLR(optimizer,1,gamma=0.5)
 if orthog_optimizer:
     orthog_scheduler = optim.lr_scheduler.StepLR(orthog_optimizer,1,gamma=0.5)
+# At any point you can hit Ctrl + C to break out of training early.
 try:
-    
-    udir = 'HS_{}_lr_{}_rinit_{}_iinit_{}_decay_{}_alpha_{}'.format(hid_size,lr,args.rinit,args.iinit,decay,args.alpha)
-    if NET_TYPE in ['RORNN2', 'ARORNN2', 'NRNN2', 'NSRNN2', 'EXPRNN']:
-        udir += '_lro_{}'.format(args.lr_orth)
-    if NET_TYPE in ['ARORNN', 'ARORNN2']:
-        udir += '_aL_{}'.format(alam)
-    SAVEDIR = './saves/PTBTask/{}/{}/{}/{}/'.format(NET_TYPE,args.bptt,udir,args.seed)
-    LOGDIR = SAVEDIR
-    writer = SummaryWriter(LOGDIR)
+    exp_time = "{0:%Y-%m-%d}_{0:%H-%M-%S}".format(datetime.now())
+    SAVEDIR = os.path.join('./saves',
+                           'sMNIST',
+                           NET_TYPE,
+                           str(args.random_seed),
+                           exp_time)
 
     if not os.path.exists(SAVEDIR):
         os.makedirs(SAVEDIR)
@@ -363,14 +320,10 @@ try:
         epoch_start_time = time.time()
         loss = train(optimizer, orthog_optimizer)
         tr_losses.append(loss)
-
         val_loss, val_acc = evaluate(val_data)
         v_losses.append(val_loss)
         v_accs.append(val_acc)
-        writer.add_scalar('train_loss',loss)
-        writer.add_scalar('valid_accuracy',val_acc)
-        writer.add_scalar('valid_bpc',val_loss/math.log(2))
-        writer.add_scalar('valid_bpc',val_loss)
+
 
         print('-' * 89)
         print('| end of epoch {:3d} | time: {:5.2f}s | valid loss {:5.2f} | '
@@ -397,6 +350,8 @@ try:
 
     with open(SAVEDIR + '{}_Val_Accs'.format(NET_TYPE),'wb') as fp:
         pickle.dump(v_accs,fp)
+
+
 
 except KeyboardInterrupt:
     print('-' * 89)

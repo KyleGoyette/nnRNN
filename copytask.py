@@ -37,7 +37,7 @@ parser.add_argument('--optimizer',type=str, default='RMSprop',
                     choices=['Adam', 'RMSprop'],
                     help='optimizer: choices Adam and RMSprop')
 parser.add_argument('--alpha',type=float,
-                    default=0.9, help='alpha value for RMSprop')
+                    default=0.99, help='alpha value for RMSprop')
 parser.add_argument('--betas',type=tuple,
                     default=(0.9, 0.999), help='beta values for Adam')
 
@@ -53,7 +53,7 @@ parser.add_argument('--nonlin', type=str, default='modrelu',
 parser.add_argument('--alam', type=float, default=0.0001,
                     help='decay for gamma values nnRNN')
 parser.add_argument('--Tdecay', type=float,
-                    default=0, help='weight decay on upper T')
+                    default=10^-6, help='weight decay on upper T')
 
 args = parser.parse_args()
 
