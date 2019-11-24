@@ -517,7 +517,7 @@ Options:
 - iinit : input weight matrix initialization, options: \[xavier, kaiming\]
 - nonlin : non linearity type, options: \[None, tanh, relu, modrelu\]
 - alam : strength of penalty on (\delta in the paper)
-- weight_decay : weight decay on upper triangular matrix values
+- Tdecay : weight decay on upper triangular matrix values
 
 ### permuted sequtential MNIST
 
@@ -540,7 +540,7 @@ Options:
 - iinit : input weight matrix initialization, options: \[xavier, kaiming\]
 - nonlin : non linearity type, options: \[None, tanh, relu, modrelu\]
 - alam : strength of penalty on (\delta in the paper)
-- weight_decay : weight decay on upper triangular matrix values
+- Tdecay : weight decay on upper triangular matrix values
 - save_freq : frequency in epochs to save data and network
 
 
@@ -567,7 +567,7 @@ Options:
 - iinit : input weight matrix initialization, options: \[xavier, kaiming\]
 - nonlin : non linearity type, options: \[None, tanh, relu, modrelu\]
 - alam : strength of penalty on (\delta in the paper)
-- weight_decay : weight decay on upper triangular matrix values
+- Tdecay : weight decay on upper triangular matrix values
 - optimizer : choice of optimizer between RMSprop and Adam
 - alpha : alpha value for optimizer (always RMSprop) 
 - betas : beta values for adam optimizer 
