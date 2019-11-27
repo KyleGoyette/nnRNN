@@ -64,11 +64,11 @@ Changes from paper:
     <td>  1.48 ± 0.008 </td>
   </tr>
   <tr>
-    <td>nnRNN</td>
-    <td> 1.40 ± 0.003  </td>
-    <td> 1.42 ± 0.003   </td>
-    <td>  1.40 ± 0.003  </td>
-    <td> 1.42 ± 0.003   </td>
+    <td><div class="text-purple"> nnRNN </div></td>
+    <td><div class="text-purple"> 1.40 ± 0.003  </div></td>
+    <td><div class="text-purple"> 1.42 ± 0.003  </div></td>
+    <td><div class="text-purple">  1.40 ± 0.003 </div></td>
+    <td><div class="text-purple"> 1.42 ± 0.003  </div></td>
   </tr>
 
 </table>
@@ -112,17 +112,17 @@ Changes from paper:
     <td>expRNN</td>
     <td>  69.02 ± 0.0005 </td>
     <td>  68.98 ± 0.0003 </td>
-    <td>   </td>
-    <td>   </td>
+    <td> 68.69 ± 0.0004  </td>
+    <td> 68.57 ± 0.0004  </td>
   </tr>
-  <tr>
-    <td>nnRNN</td>
-    <td>  69.89 ± 0.001</td>
-    <td> 69.54 ± 0.001  </td>
-    <td>  69.89 ± 0.001 </td>
-    <td> 69.54 ± 0.001  </td>
+  <tr> 
+    <td>
+    <div class="text-purple"> nnRNN</div></td>
+    <td><div class="text-purple"> 69.89 ± 0.001</div></td>
+    <td><div class="text-purple"> 69.54 ± 0.001 </div></td>
+    <td><div class="text-purple"> 69.89 ± 0.001 </div></td>
+    <td><div class="text-purple"> 69.54 ± 0.001 </div></td>
   </tr>
-
 </table>
 
 #### Hyperparameters for reported results
@@ -135,14 +135,14 @@ Changes from paper:
         <td>Optimizer</td>
         <td>LR</td>
         <td>Orth. LR</td>
-        <td>$$\delta$$</td>
+        <td>δ</td>
         <td>T decay</td>
         <td>Recurrent init</td>
     </tr>
     <tr>
         <td>RNN</td>
         <td>128</td>
-        <td>RMSprop $$\alpha=0.9$$</td>
+        <td>RMSprop &alpha=0.9</td>
         <td>0.001</td>
         <td></td>
         <td></td>
@@ -152,7 +152,7 @@ Changes from paper:
     <tr>
         <td>RNN-orth</td>
         <td> 128</td>
-        <td>RMSprop $$\alpha=0.99$$ </td>
+        <td>RMSprop &alpha=0.99 </td>
         <td>0.0002 </td>
         <td> </td>
         <td></td>
@@ -162,7 +162,7 @@ Changes from paper:
     <tr>
         <td>EURNN</td>
         <td> 128</td>
-        <td>RMSprop $$\alpha=0.5$$ </td>
+        <td>RMSprop &alpha=0.5 </td>
         <td>0.001 </td>
         <td> </td>
         <td></td>
@@ -172,7 +172,7 @@ Changes from paper:
     <tr>
         <td>EURNN</td>
         <td> 256</td>
-        <td>RMSprop $$\alpha=0.5$$ </td>
+        <td>RMSprop &alpha=0.5 </td>
         <td>0.001 </td>
         <td> </td>
         <td></td>
@@ -182,7 +182,7 @@ Changes from paper:
     <tr>
         <td>expRNN</td>
         <td> 128</td>
-        <td>RMSprop $$\alpha=0.99$$ </td>
+        <td>RMSprop &alpha=0.99 </td>
         <td>0.001 </td>
         <td> 0.0001</td>
         <td></td>
@@ -192,7 +192,7 @@ Changes from paper:
     <tr>
         <td>expRNN</td>
         <td> 176</td>
-        <td>RMSprop $$\alpha=0.99$$ </td>
+        <td>RMSprop &alpha=0.99 </td>
         <td>0.001 </td>
         <td> 0.0001</td>
         <td></td>
@@ -202,7 +202,7 @@ Changes from paper:
     <tr>
         <td>nnRNN</td>
         <td>128 </td>
-        <td>  RMSprop $$\alpha=0.99$$ </td>
+        <td>  RMSprop &alpha=0.99 </td>
         <td>0.0005 </td>
         <td>10<sup>-6</sup> </td>
         <td>0.0001</td>
@@ -221,14 +221,14 @@ Changes from paper:
         <td>Optimizer</td>
         <td>LR</td>
         <td>Orth. LR</td>
-        <td>$$\delta$$</td>
+        <td>&delta</td>
         <td>T decay</td>
         <td>Recurrent init</td>
     </tr>
     <tr>
         <td>RNN</td>
         <td>512</td>
-        <td>RMSprop $$\alpha=0.9$$</td>
+        <td>RMSprop &alpha=0.9</td>
         <td>0.0001</td>
         <td></td>
         <td></td>
@@ -238,7 +238,7 @@ Changes from paper:
     <tr>
         <td>RNN-orth</td>
         <td> 512</td>
-        <td>RMSprop $$\alpha=0.99$$ </td>
+        <td>RMSprop &alpha=0.99 </td>
         <td>5*10<sup>-5</sup> </td>
         <td> </td>
         <td></td>
@@ -248,7 +248,7 @@ Changes from paper:
     <tr>
         <td>EURNN</td>
         <td> 512</td>
-        <td>RMSprop $$\alpha=0.9$$ </td>
+        <td>RMSprop &alpha=0.9 </td>
         <td>0.0001 </td>
         <td> </td>
         <td></td>
@@ -258,7 +258,7 @@ Changes from paper:
     <tr>
         <td>EURNN</td>
         <td> 1024</td>
-        <td>RMSprop $$\alpha=0.9$$ </td>
+        <td>RMSprop &alpha=0.9 </td>
         <td>0.0001 </td>
         <td> </td>
         <td></td>
@@ -268,7 +268,7 @@ Changes from paper:
     <tr>
         <td>expRNN</td>
         <td> 512</td>
-        <td>RMSprop $$\alpha=0.99$$ </td>
+        <td>RMSprop &alpha=0.99 </td>
         <td>0.0005 </td>
         <td>5*10<sup>-5</sup> </td>
         <td></td>
@@ -278,7 +278,7 @@ Changes from paper:
     <tr>
         <td>expRNN</td>
         <td>722</td>
-        <td>RMSprop $$\alpha=0.99$$ </td>
+        <td>RMSprop &alpha=0.99 </td>
         <td>5*10<sup>-5</sup> </td>
         <td> </td>
         <td></td>
@@ -288,7 +288,7 @@ Changes from paper:
     <tr>
         <td>nnRNN</td>
         <td>512 </td>
-        <td> RMSprop $$\alpha=0.99$$  </td>
+        <td> RMSprop &alpha=0.99  </td>
         <td>0.0002 </td>
         <td>2*10<sup>-5</sup> </td>
         <td>0.1</td>
@@ -298,7 +298,7 @@ Changes from paper:
     <tr>
         <td>LSTM</td>
         <td>  512 </td>
-        <td>  RMSprop $$\alpha=0.99$ </td>
+        <td>  RMSprop &alpha=0.99 </td>
         <td>0.0005 </td>
         <td> </td>
         <td></td>
@@ -308,7 +308,7 @@ Changes from paper:
         <tr>
         <td>LSTM</td>
         <td>  257 </td>
-        <td>  RMSprop $$\alpha=0.9$$ </td>
+        <td>  RMSprop &alpha=0.9 </td>
         <td>0.0005 </td>
         <td> </td>
         <td></td>
@@ -325,7 +325,7 @@ Changes from paper:
     <td>Optimizer</td>
     <td>LR</td>
     <td>Orth. LR</td>
-    <td>$$\delta$$</td>
+    <td>&delta</td>
     <td>T decay</td>
     <td>Recurrent init</td>
     <td>Grad Clipping Value</td>
@@ -336,7 +336,7 @@ Changes from paper:
   <tr>
     <td>RNN</td>
     <td>1024</td>
-    <td>RMSprop $$\alpha=0.9$$</td>
+    <td>RMSprop &alpha=0.9</td>
     <td>10<sup>-5</sup></td>
     <td></td>
     <td></td>
@@ -347,7 +347,7 @@ Changes from paper:
   <tr>
     <td>RNN-orth</td>
     <td> 1024</td>
-    <td>RMSprop $$\alpha=0.9$$ </td>
+    <td>RMSprop &alpha=0.9 </td>
     <td>0.0001 </td>
     <td> </td>
     <td></td>
@@ -358,7 +358,7 @@ Changes from paper:
   <tr>
     <td>EURNN</td>
     <td> 1024</td>
-    <td>RMSprop $$\alpha=0.9$$ </td>
+    <td>RMSprop &alpha=0.9 </td>
     <td>0.001 </td>
     <td> </td>
     <td></td>
@@ -369,7 +369,7 @@ Changes from paper:
   <tr>
     <td>EURNN</td>
     <td> 2048</td>
-    <td>RMSprop $$\alpha=0.9$$ </td>
+    <td>RMSprop &alpha=0.9 </td>
     <td>0.001 </td>
     <td> </td>
     <td></td>
@@ -380,7 +380,7 @@ Changes from paper:
   <tr>
     <td>expRNN</td>
     <td> 1024</td>
-    <td>RMSprop $$\alpha=0.9$$ </td>
+    <td>RMSprop &alpha=0.9 </td>
     <td>0.001 </td>
     <td> </td>
     <td></td>
@@ -391,7 +391,7 @@ Changes from paper:
    <tr>
     <td>expRNN</td>
     <td> 1386</td>
-    <td>RMSprop $$\alpha=0.9$$ </td>
+    <td>RMSprop &alpha=0.9 </td>
     <td>0.008 </td>
     <td>0.0008 </td>
     <td></td>
@@ -402,7 +402,7 @@ Changes from paper:
   <tr>
     <td>nnRNN</td>
     <td>  1024 </td>
-    <td>  Adam $$\Beta = (0.0,0.9) $$ </td>
+    <td>  Adam &beta = (0.0,0.9) </td>
     <td>0.002 </td>
     <td> 0.0002 </td>
     <td>0.0001</td>
@@ -416,7 +416,7 @@ Changes from paper:
   <tr>
     <td>RNN</td>
     <td>1024</td>
-    <td>RMSprop $$\alpha=0.9$$</td>
+    <td>RMSprop &alpha=0.9</td>
     <td>10<sup>-5</sup></td>
     <td></td>
     <td></td>
@@ -427,7 +427,7 @@ Changes from paper:
   <tr>
     <td>RNN-orth</td>
     <td> 1024</td>
-    <td>RMSprop $$\alpha=0.9$$ </td>
+    <td>RMSprop &alpha=0.9 </td>
     <td>0.0001 </td>
     <td> </td>
     <td></td>
@@ -438,7 +438,7 @@ Changes from paper:
   <tr>
     <td>EURNN</td>
     <td> 1024</td>
-    <td>RMSprop $$\alpha=0.9$$ </td>
+    <td>RMSprop &alpha=0.9 </td>
     <td>0.001 </td>
     <td> </td>
     <td></td>
@@ -449,7 +449,7 @@ Changes from paper:
   <tr>
     <td>EURNN</td>
     <td> 2048</td>
-    <td>RMSprop $$\alpha=0.9$$ </td>
+    <td>RMSprop &alpha=0.9 </td>
     <td>0.001 </td>
     <td> </td>
     <td></td>
@@ -460,7 +460,7 @@ Changes from paper:
   <tr>
     <td>expRNN</td>
     <td> 1024</td>
-    <td>RMSprop $$\alpha=0.9$$ </td>
+    <td>RMSprop &alpha=0.9 </td>
     <td>0.001 </td>
     <td> </td>
     <td></td>
@@ -471,7 +471,7 @@ Changes from paper:
    <tr>
     <td>expRNN</td>
     <td> 1386</td>
-    <td>RMSprop $$\alpha=0.9$$ </td>
+    <td>RMSprop &alpha=0.9 </td>
     <td>0.001 </td>
     <td> </td>
     <td></td>
@@ -482,7 +482,7 @@ Changes from paper:
   <tr>
     <td>nnRNN</td>
     <td>  1024 </td>
-    <td> Adam $$\Beta = (0.0, 0.9) $$  </td>
+    <td> Adam &beta = (0.0, 0.9) </td>
     <td>0.002 </td>
     <td> 0.0002</td>
     <td>0.0001</td>
@@ -516,7 +516,7 @@ Options:
 - rinit : recurrent weight matrix initialization options: \[xavier, henaff, cayley, random orth.\]
 - iinit : input weight matrix initialization, options: \[xavier, kaiming\]
 - nonlin : non linearity type, options: \[None, tanh, relu, modrelu\]
-- alam : strength of penalty on (\delta in the paper)
+- alam : strength of penalty on (&delta in the paper)
 - Tdecay : weight decay on upper triangular matrix values
 
 ### permuted sequtential MNIST
@@ -539,7 +539,7 @@ Options:
 - rinit : recurrent weight matrix initialization options: \[xavier, henaff, cayley, random orth.\]
 - iinit : input weight matrix initialization, options: \[xavier, kaiming\]
 - nonlin : non linearity type, options: \[None, tanh, relu, modrelu\]
-- alam : strength of penalty on (\delta in the paper)
+- alam : strength of penalty on (&delta in the paper)
 - Tdecay : weight decay on upper triangular matrix values
 - save_freq : frequency in epochs to save data and network
 
@@ -566,7 +566,7 @@ Options:
 - rinit : recurrent weight matrix initialization options: \[xavier, henaff, cayley, random orth.\]
 - iinit : input weight matrix initialization, options: \[xavier, kaiming\]
 - nonlin : non linearity type, options: \[None, tanh, relu, modrelu\]
-- alam : strength of penalty on (\delta in the paper)
+- alam : strength of penalty on (&delta in the paper)
 - Tdecay : weight decay on upper triangular matrix values
 - optimizer : choice of optimizer between RMSprop and Adam
 - alpha : alpha value for optimizer (always RMSprop) 
