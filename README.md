@@ -22,6 +22,7 @@ Changes from paper:
 - Testing of Adam optimizer using betas (0.0, 0.9) on expRNN and nnRNN
 - Added grad clipping
 - Note the large improvements in nnRNN, expRNN did not achieve improvements through new optimizer
+- Updated results in bold
 #### Test Bit per Character (BPC)
 <table>
   <tr>
@@ -65,11 +66,11 @@ Changes from paper:
     <td>  1.48 ± 0.008 </td>
   </tr>
   <tr>
-    <td> **nnRNN** </td>
-    <td> **1.40** **±** **0.003**  </td>
-    <td> **1.42** **±** **0.003**  </td>
-    <td>  **1.40** **±** **0.003** </td>
-    <td> **1.42** **±** **0.003**  </td>
+    <td style="font-weight:bold"> nnRNN </td>
+    <td style="font-weight:bold"> 1.40 ± 0.003  </td>
+    <td style="font-weight:bold"> 1.42 ± 0.003  </td>
+    <td style="font-weight:bold">  1.40 ± 0.003 </td>
+    <td style="font-weight:bold"> 1.42 ± 0.003  </td>
   </tr>
 
 </table>
@@ -117,11 +118,11 @@ Changes from paper:
     <td> 68.57 ± 0.0004  </td>
   </tr>
   <tr> 
-    <td>**nnRNN**</td>
-    <td> **69.89** **±** **0.001**</td>
-    <td> **69.54** **±** **0.001**</td>
-    <td> **69.89** **±** **0.001**</td>
-    <td> **69.54** **±** **0.001**</td>
+    <td style="font-weight:bold">nnRNN</td>
+    <td style="font-weight:bold"> 69.89 ± 0.001</td>
+    <td style="font-weight:bold"> 69.54 ± 0.001</td>
+    <td style="font-weight:bold"> 69.89 ± 0.001</td>
+    <td style="font-weight:bold"> 69.54 ± 0.001</td>
   </tr>
 </table>
 
