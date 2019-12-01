@@ -1,10 +1,13 @@
 import numpy as np
-import scipy.linalg as linalg
 import torch.nn as nn
 import torch
-from RNN_Cell import OrthoRNNCell, NewOrthoRNNCell,RNNCell
+import torch.optim as optim
+from RNN_Cell import OrthoRNNCell, RNNCell
 from LSTM import LSTM
 from expRNN.exprnn import ExpRNN
+import argparse
+from expRNN.initialization import (henaff_init,cayley_init,
+                                   random_orthogonal_init)
 def rvs(dim=3):
     random_state = np.random
     H = np.eye(dim)
@@ -40,33 +43,29 @@ def str2bool(v):
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
-def select_network(net_type,inp_size,hid_size,nonlin,rinit,iinit,cuda,ostep_method):
-    if net_type == 'RNN':
-        rnn = RNNCell(inp_size,hid_size,nonlin,bias=False,cuda=cuda,r_initializer=rinit,i_initializer=iinit)
-    elif net_type == 'ORNN':
-        rnn = OrthoRNNCell(inp_size,hid_size,nonlin,bias=False, cuda=cuda,ostep_method=False)
-    elif net_type == 'ORNNR':
-        rnn = OrthoRNNCell(inp_size,hid_size,nonlin,bias=False,cuda=cuda,ref=True,ostep_method=False)
-    elif net_type == 'RORNN':
-        rnn = OrthoRNNCell(inp_size,hid_size,nonlin,bias=False, cuda=cuda,rot=True,ostep_method=False)
-    elif net_type == 'ARORNN':
-        rnn = OrthoRNNCell(inp_size,hid_size,nonlin,bias=False, cuda=cuda,rot=True,alpha_rot=True,ostep_method=False)
-    elif net_type == 'ORNN2':
-        rnn = OrthoRNNCell(inp_size,hid_size,nonlin,bias=False,cuda=cuda,ostep_method=ostep_method,r_initializer=rinit,i_initializer=iinit)
-    elif net_type == 'ORNNR2':
-        rnn = OrthoRNNCell(inp_size,hid_size,nonlin,bias=False,cuda=cuda,ref=True,ostep_method=ostep_method,r_initializer=rinit,i_initializer=iinit)
-    elif net_type == 'RORNN2':
-        rnn = OrthoRNNCell(inp_size,hid_size,nonlin,bias=False,cuda=cuda,rot=True,ostep_method=ostep_method,r_initializer=rinit,i_initializer=iinit)
-    elif net_type == 'ARORNN2':
-        rnn = OrthoRNNCell(inp_size,hid_size,nonlin,bias=False,cuda=cuda,rot=True,alpha_rot=True,ostep_method=ostep_method,r_initializer=rinit,i_initializer=iinit)
-    elif net_type == 'NRNN2':
-        rnn = NewOrthoRNNCell(inp_size,hid_size,nonlin,bias=False,cuda=cuda,orth_method=ostep_method,r_initializer=rinit,i_initializer=iinit)
-    elif net_type == 'NSRNN2':
-        rnn = NewOrthoRNNCell(inp_size,hid_size,nonlin,bias=False,cuda=cuda,orth_method=ostep_method,r_initializer=rinit,i_initializer=iinit,schur=True)
-    elif net_type == 'EXPRNN':
-        rnn = ExpRNN(inp_size,hid_size,skew_initializer=rinit,input_initializer=iinit)
-    elif net_type == 'LSTM':
-        rnn = LSTM(inp_size,hid_size,cuda=cuda)
+def select_network(args, inp_size):
+    iinit, rinit = get_initializers(args)
+    if args.net_type == 'RNN':
+        rnn = RNNCell(inp_size,args.nhid,
+                      args.nonlin,
+                      bias=True,
+                      cuda=args.cuda,
+                      r_initializer=rinit,
+                      i_initializer=iinit)
+    elif args.net_type == 'nnRNN':
+        rnn = OrthoRNNCell(inp_size,args.nhid,args.nonlin,
+                           bias=False,
+                           cuda=args.cuda,
+                           r_initializer=rinit,
+                           i_initializer=iinit)
+    elif args.net_type == 'expRNN':
+        rnn = ExpRNN(inp_size,args.nhid,
+                     skew_initializer=rinit,
+                     input_initializer=iinit)
+    elif args.net_type == 'LSTM':
+        rnn = LSTM(inp_size,
+                   args.nhid,
+                   cuda=args.cuda)
     return rnn
 
 def calc_hidden_size(net_type, n_params, n_in, n_out):
@@ -119,4 +118,63 @@ def calc_hidden_size_PTB(net_type, n_params, n_chars, n_emb):
 
 def retrieve_weight_matrices(path,test):
     data = torch.load(path)
-    
+
+def get_initializers(args):
+    if args.rinit == "cayley":
+        rinit = cayley_init
+    elif args.rinit == "henaff":
+        rinit = henaff_init
+    elif args.rinit == "random":
+        rinit = random_orthogonal_init
+    elif args.rinit == 'xavier':
+        rinit = nn.init.xavier_normal_
+    if args.iinit == "xavier":
+        iinit = nn.init.xavier_normal_
+    elif args.iinit == 'kaiming':
+        iinit = nn.init.kaiming_normal_
+
+    return iinit, rinit
+
+def select_optimizer(net, args):
+    if args.net_type == 'nnRNN':
+        x = [
+            {'params': (param for param in net.parameters()
+                        if param is not net.rnn.log_P
+                        and param is not net.rnn.P
+                        and param is not net.rnn.UppT)},
+            {'params': net.rnn.UppT, 'weight_decay': args.Tdecay}
+            ]
+        y = [
+            {'params': (param for param in net.parameters() if param is net.rnn.log_P)}
+        ]
+    elif args.net_type == 'expRNN':
+        x = [
+            {'params': (param for param in net.parameters()
+                        if param is not net.rnn.log_recurrent_kernel
+                        and param is not net.rnn.recurrent_kernel)}
+            ]
+        y = [
+            {'params': (param for param in net.parameters()
+                        if param is net.rnn.log_recurrent_kernel)}
+        ]
+    else:
+        x = [
+            {'params': (param for param in net.parameters())}
+        ]
+    if args.net_type in ['nnRNN', 'expRNN']:
+        if args.optimizer == 'RMSprop':
+            optimizer = optim.RMSprop(x, lr=args.lr, alpha=args.alpha)
+            orthog_optimizer = optim.RMSprop(y, lr=args.lr_orth, alpha=args.alpha)
+        elif args.optimizer == 'Adam':
+            optimizer = optim.Adam(x, lr=args.lr, alpha=args.betas)
+            orthog_optimizer = optim.Adam(y, lr=args.lr_orth, betas=args.betas)
+    else:
+        if args.optimizer == 'RMSprop':
+            optimizer = optim.RMSprop(x, lr=args.lr, alpha=args.alpha)
+            orthog_optimizer = None
+        elif args.optimizer == 'Adam':
+            optimizer = optim.Adam(x, lr=args.lr, alpha=args.betas)
+            orthog_optimizer = None
+    return optimizer, orthog_optimizer
+
+
