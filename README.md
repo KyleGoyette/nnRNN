@@ -22,7 +22,6 @@ Changes from paper:
 - Testing of Adam optimizer using betas (0.0, 0.9) on expRNN and nnRNN
 - Added grad clipping
 - Note the large improvements in nnRNN, expRNN did not achieve improvements through new optimizer
-- Updated results in bold
 #### Test Bit per Character (BPC)
 <table>
   <tr>
