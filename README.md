@@ -21,7 +21,8 @@ EURNN tests based on code taken from  [here](https://github.com/jingli9111/EUNN-
 Changes from paper:
 - Testing of Adam optimizer using betas (0.0, 0.9) on expRNN and nnRNN
 - Added grad clipping
-- Note the large improvements in nnRNN, expRNN did not achieve improvements through new optimizer
+- Note the large improvements in nnRNN
+- expRNN did not achieve improvements through new optimizer, but was improved by searching higher learning rates
 #### Test Bit per Character (BPC)
 <table>
   <tr>
