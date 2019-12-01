@@ -19,8 +19,9 @@ EURNN tests based on code taken from  [here](https://github.com/jingli9111/EUNN-
 
 ### PTB
 Changes from paper:
-- Testing of Adam optimizer using betas (0.0, 0.9)
+- Testing of Adam optimizer using betas (0.0, 0.9) on expRNN and nnRNN
 - Added grad clipping
+- Note the large improvements in nnRNN, expRNN did not achieve improvements through new optimizer
 #### Test Bit per Character (BPC)
 <table>
   <tr>
@@ -64,11 +65,11 @@ Changes from paper:
     <td>  1.48 ± 0.008 </td>
   </tr>
   <tr>
-    <td><div class="text-purple"> nnRNN </div></td>
-    <td><div class="text-purple"> 1.40 ± 0.003  </div></td>
-    <td><div class="text-purple"> 1.42 ± 0.003  </div></td>
-    <td><div class="text-purple">  1.40 ± 0.003 </div></td>
-    <td><div class="text-purple"> 1.42 ± 0.003  </div></td>
+    <td> _nnRNN_ </td>
+    <td> _1.40_ _±_ _0.003_  </td>
+    <td> _1.42_ _±_ _0.003_  </td>
+    <td>  _1.40_ _±_ _0.003_ </td>
+    <td> _1.42_ _±_ _0.003_  </td>
   </tr>
 
 </table>
@@ -116,12 +117,11 @@ Changes from paper:
     <td> 68.57 ± 0.0004  </td>
   </tr>
   <tr> 
-    <td>
-    <div class="text-purple"> nnRNN</div></td>
-    <td><div class="text-purple"> 69.89 ± 0.001</div></td>
-    <td><div class="text-purple"> 69.54 ± 0.001 </div></td>
-    <td><div class="text-purple"> 69.89 ± 0.001 </div></td>
-    <td><div class="text-purple"> 69.54 ± 0.001 </div></td>
+    <td>nnRNN</td>
+    <td> _69.89_ _±_ _0.001_</td>
+    <td> _69.54_ _±_ _0.001_</td>
+    <td> _69.89_ _±_ _0.001_</td>
+    <td> _69.54_ _±_ _0.001_</td>
   </tr>
 </table>
 
