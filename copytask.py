@@ -53,7 +53,7 @@ parser.add_argument('--nonlin', type=str, default='modrelu',
 parser.add_argument('--alam', type=float, default=0.0001,
                     help='decay for gamma values nnRNN')
 parser.add_argument('--Tdecay', type=float,
-                    default=10^-6, help='weight decay on upper T')
+                    default=10e-6, help='weight decay on upper T')
 
 args = parser.parse_args()
 
@@ -234,7 +234,9 @@ print(NET_TYPE)
 print('Cuda: {}'.format(CUDA))
 print(nonlin)
 print(hidden_size)
-
+for name, param in net.named_parameters():
+    if param.requires_grad:
+        print(name, param.data)
 if not os.path.exists(SAVEDIR):
     os.makedirs(SAVEDIR)
 
