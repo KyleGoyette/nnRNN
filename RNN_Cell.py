@@ -62,7 +62,7 @@ class RNNCell(nn.Module):
             self.V.weight.data = self._B(
                 torch.as_tensor(self.r_initializer(self.hidden_size)))
         else:
-            self.i_initializer(self.V.weight.data)
+            self.r_initializer(self.V.weight.data)
 
     def _A(self,gradients=False):
         A = self.V.weight.data
@@ -89,7 +89,7 @@ class RNNCell(nn.Module):
 
 
 class OrthoRNNCell(nn.Module):
-    def __init__(self,inp_size,hid_size,nonlin,bias=True,cuda=False,r_initializer=henaff_init,i_initializer=nn.init.xavier_normal_):
+    def __init__(self,inp_size,hid_size,nonlin,bias=False,cuda=False,r_initializer=henaff_init,i_initializer=nn.init.xavier_normal_):
         super(OrthoRNNCell,self).__init__()
         self.cudafy = cuda
         self.hidden_size = hid_size
@@ -191,7 +191,6 @@ class OrthoRNNCell(nn.Module):
         return h
 
     def calc_rec(self):
-
         self.calc_D()
         self.calc_alpha_block()
         self.rec = torch.matmul(torch.matmul(self.P,torch.mul(self.UppT,self.M)+torch.mul(self.alpha_block,self.D)),self.P.t())
