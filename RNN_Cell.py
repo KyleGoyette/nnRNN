@@ -48,7 +48,7 @@ class RNNCell(nn.Module):
         self.U = nn.Linear(inp_size, hid_size, bias=bias)
         self.i_initializer = i_initializer
 
-        self.V = nn.Linear(hid_size, hid_size)
+        self.V = nn.Linear(hid_size, hid_size, bias=False)
 
         self.r_initializer = r_initializer
         self.reset_parameters()
@@ -62,6 +62,7 @@ class RNNCell(nn.Module):
             self.V.weight.data = self._B(
                 torch.as_tensor(self.r_initializer(self.hidden_size)))
         else:
+            print('other')
             self.r_initializer(self.V.weight.data)
 
     def _A(self,gradients=False):
