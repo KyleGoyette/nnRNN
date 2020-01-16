@@ -144,7 +144,7 @@ def save_checkpoint(state, fname):
     filename = os.path.join(SAVEDIR, fname)
     torch.save(state, filename)
 
-def train_model(net, num_epochs):
+def train_model(net, optimizer, num_epochs):
     train_losses = []
     train_accuracies = []
     test_losses = []

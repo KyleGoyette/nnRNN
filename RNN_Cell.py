@@ -125,6 +125,7 @@ class OrthoRNNCell(nn.Module):
         self.UppT = UppT
         self.UppT = nn.Parameter(self.UppT)
         self.M = torch.triu(torch.ones_like(self.UppT),diagonal=1)
+        self.D = torch.zeros_like(self.UppT)
 
 
         # Create rotations and mask M for *.3 and *.4
