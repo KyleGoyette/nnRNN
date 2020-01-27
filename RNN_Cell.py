@@ -155,9 +155,13 @@ class OrthoRNNCell(nn.Module):
                 item = item.cuda()
 
     def reset_parameters(self):
-        self.i_initializer(self.U.weight.data)
-        self.log_P.data = torch.as_tensor(self.r_initializer(self.hidden_size))
-        self.P.data = self._B(False)
+        if self.r_initializer == random_orthogonal_init or \
+                self.r_initializer == henaff_init or \
+                self.r_initializer == cayley_init:
+            self.P.data = self._B(
+                torch.as_tensor(self.r_initializer(self.hidden_size), dtype=torch.float32))
+        else:
+            self.r_initializer(self.P.data)
 
     def _A(self,gradients=False):
         A = self.log_P

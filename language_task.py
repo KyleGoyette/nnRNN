@@ -139,7 +139,7 @@ parser.add_argument('--Tdecay', type=float,
                     default=0.0001, help='weight decay on upper T')
 parser.add_argument('--optimizer', type=str, default='RMSprop', choices=['RMSprop', 'Adam'])
 parser.add_argument('--alpha', type=float, default=0.9)
-parser.add_argument('--betas', type=tuple, default=(0.0, 0.9))
+parser.add_argument('--betas', type=float, default=(0.0, 0.9), nargs='+')
 
 args = parser.parse_args()
 

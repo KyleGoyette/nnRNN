@@ -623,7 +623,7 @@ def _solve_P_Q(U, V, structure=None):
     """
     P = U + V
     Q = -U + V
-    return torch.gesv(P, Q)[0]
+    return torch.solve(P, Q)[0]
 
 
 def _ell(A, m):
